@@ -1,4 +1,6 @@
 from app import app
 
+manager = Manager(app)
+
 if __name__ == '__main__':
-    app.run(debug = True)
+    manager.run(debug = True)

@@ -10,11 +10,11 @@ def index():
     '''
     return render_template('index.html')
 
-@app.route('/pitch/<int:pitch_id>')
-def pitch(pitch_id):
+@app.route('/blog/<int:blog_id>')
+def blog(blog_id):
 
     '''
-    View pitch page function that returns the pitch details page and its data
+    View blog page function that returns the blog details page and its data
     '''
-  title = 'Home - Welcome to The best Pitch Website'
+  title = 'Home - Welcome to The best blog Website'
     return render_template('index.html', title = title)

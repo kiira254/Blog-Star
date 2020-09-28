@@ -1,0 +1,89 @@
+{% extends 'base.html'%}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block styles%}
+    {{super()}}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/profile.css')}}">
+{% endblock%}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+  <!-- displaying  Username-->
+    <div class="col-md-4">
+      <h3> {{user.username| capitalize}} </h3>
+
+      <!--Displaying user bio-->
+      {% if user.bio %}
+        <p> {{user.bio}}</p>
+      {%else%}
+        <p> {{user.username| capitalize}} has no bio </p>
+      {% endif %}
+    </div>
+
+    <!--Display profile photo-->
+    <div class="col-md-4">
+
+      {% if user.profile_pic_path %}
+        <img src="{{url_for('static',filename=user.profile_pic_path)}}" alt="" class="img-thumbnail">
+        {%else%}
+        <p>No profile picture</p>
+      {% endif %}
+
+      {% if user == current_user %}
+        <form  action="{{url_for('main.update_pic',uname=user.username)}}" method="post" enctype = "multipart/form-data">
+
+          <input type="file"  name="photo" class="form-control" required>
+          <input type="submit">
+        </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-2 col-lg-2 col-sm-0"></div>
+    <div class="col-md-8 col-sm-12 col-lg-8">
+      <ul class="list-group">
+        {% for blog in bloges%}
+        <li class="list-group-item">
+            <!-- {{blog.blog}} -->
+            <div class="card w-75">
+              <div class="card-body">
+                <h4 class="card-title"><span class="badge badge-default">Date Posted: <span class="badge badge-light">{{blog.posted.strftime('%Y-%m-%d')}}</span></span>----<span class="badge badge-default">blog Category: <span class="badge badge-light">{{blog.blog_category}}</span></span></h4>
+                <p class="card-text">{{blog.blog}}</p>
+                {% if blog.user==current_user%}
+                <div>
+                  <a href="{{url_for('main.update',pname=blog.id)}}" class="btn btn-primary btn-sm">Update</a>
+                  <button type="button" class="btn btn-danger btn-sm m-2" data-toggle="modal" data-target="#deleteModal" href="{{url_for('main.delete_blog',blog_id=blog.id)}}">Delete</button>
+                </div>
+                <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Delete this blog</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-footer ">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <form action="{{url_for('main.delete_blog',blog_id=blog.id)}}" method="POST">
+                            <input class="btn btn-danger" type="submit" value="Delete">
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {%endif%}                          
+              </div>
+            </div>
+        </li>
+        {% endfor%}
+      </ul>
+    </div>
+    <div class="col-md-2 col-lg-2 col-sm-0"></div>
+</div>
+
+</div>
+{% endblock content %}

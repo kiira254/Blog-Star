@@ -5,7 +5,7 @@
         {% if title %}
         <title> {{ title }}</title>
         {% else %}
-        <title> Welcome to the best Pitch Review website </title>
+        <title> Welcome to the best blog Review website </title>
         {% endif %}
     </head>
     <body>
@@ -24,16 +24,16 @@
         <div class="col-md-2 col-lg-2 col-xs-1"></div>
         <div class="col-md-8 col-lg-8 col-xs-10 ">
             <ul class="list-index ">
-                {% for pitch in pitches.items%}
+                {% for blog in bloges.items%}
                 <li class="jumbotron " style="padding-left:40px ; list-style-type: none;">                 
                     <div class="card mb-6 bg-dark text-white">
                         <div class="card-body">
-                            <h4 class="card-title" style="color:rgba(199, 130, 144, 0.911)"> Pitch Category: {{pitch.pitch_category}}~ <span></span><a href="{{url_for('main.posted',username=pitch.user.username)}}">Posted By: {{pitch.user.username}}</a></h4>
-                            <p class="card-text">{{pitch.pitch}}</p>
-                            <p class="card-text" style="color:rgba(216, 143, 157, 0.945)">Posted On: {{pitch.posted.strftime('%Y-%m-%d')}}~<span></span><span></span>Likes: {{pitch.upvotes}}~<span></span>Dislikes: {{pitch.downvotes}}</p>
+                            <h4 class="card-title" style="color:rgba(199, 130, 144, 0.911)"> blog Category: {{blog.blog_category}}~ <span></span><a href="{{url_for('main.posted',username=blog.user.username)}}">Posted By: {{blog.user.username}}</a></h4>
+                            <p class="card-text">{{blog.blog}}</p>
+                            <p class="card-text" style="color:rgba(216, 143, 157, 0.945)">Posted On: {{blog.posted.strftime('%Y-%m-%d')}}~<span></span><span></span>Likes: {{blog.upvotes}}~<span></span>Dislikes: {{blog.downvotes}}</p>
                         </div>
-                        <a href="{{url_for('main.comment',pname=pitch.id)}}"><i class="fa fa-comment" style="font-size:36px;color:rgb(212, 160, 156)" aria-hidden="true"></i></a> <span><span><a href="{{url_for('main.comment',pname=pitch.id)}}"><i class="fa fa-thumbs-up" style="font-size:36px;color:green" aria-hidden="true"></i>
-                        </a></span> <span><a href="{{url_for('main.comment',pname=pitch.id)}}"><i class="fa fa-thumbs-down" style="font-size:36px;color:rgb(190, 134, 134)" aria-hidden="true"></i>
+                        <a href="{{url_for('main.comment',pname=blog.id)}}"><i class="fa fa-comment" style="font-size:36px;color:rgb(212, 160, 156)" aria-hidden="true"></i></a> <span><span><a href="{{url_for('main.comment',pname=blog.id)}}"><i class="fa fa-thumbs-up" style="font-size:36px;color:green" aria-hidden="true"></i>
+                        </a></span> <span><a href="{{url_for('main.comment',pname=blog.id)}}"><i class="fa fa-thumbs-down" style="font-size:36px;color:rgb(190, 134, 134)" aria-hidden="true"></i>
                         </a></span></span>
                     </div>              
                 </li>

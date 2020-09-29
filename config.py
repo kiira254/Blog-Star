@@ -1,4 +1,7 @@
 import os
+from dotenv import load_dotenv as ld
+
+ld()
 
 class Config:
     '''
@@ -11,6 +14,8 @@ class Config:
     SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://nelly:kamotho@localhost/blog'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOADED_PHOTOS_DEST ='app/static/photos'
+    SENDGRID_API_KEY=os.environ.get('SENDGRID_API_KEY')
+    DEFAULT_SENDGRID_SENDER =  os.environ.get('DEFAULT_SENDGRID_SENDER')
 
     #  email configurations
     MAIL_SERVER = 'smtp.googlemail.com'

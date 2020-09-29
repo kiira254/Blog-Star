@@ -16,8 +16,7 @@ class Config:
     UPLOADED_PHOTOS_DEST ='app/static/photos'
     SENDGRID_API_KEY=os.environ.get('SENDGRID_API_KEY')
     DEFAULT_SENDGRID_SENDER =  os.environ.get('DEFAULT_SENDGRID_SENDER')
-    QUOTE_API_BASE_URL='GET http://quotes.stormconsultancy.co.uk/quotes/1.json?callback=my_method'
-
+   
     #  email configurations
     MAIL_SERVER = 'smtp.googlemail.com'
     MAIL_PORT = 587

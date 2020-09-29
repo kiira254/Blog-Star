@@ -1,6 +1,5 @@
 
-import requests
-
+import request
 
 def getQuotes():
     response = requests.get('http://quotes.stormconsultancy.co.uk/random.json')

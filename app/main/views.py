@@ -4,9 +4,9 @@ import secrets
 from flask import render_template,redirect,url_for,abort,flash,request
 from . import main
 from flask_login import login_required,current_user
-from ..models import User,Comment,Blog,Votes
+from ..models import User,Comment,Blog
 from .. import db,photos
-from .forms import UpdateProfile,UploadBlog,CommentsForm
+from .froms import UpdateProfile,UploadBlog,CommentsForm
 from flask import current_app
 from app.requests import getQuotes
 

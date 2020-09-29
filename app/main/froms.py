@@ -54,15 +54,7 @@ class blogForm(FlaskForm):
     submit = SubmitField('blog')
 
 
-class CommentForm(FlaskForm):
-    comment = TextAreaField('Comment', validators=[DataRequired()])
-    submit = SubmitField('blog')
-
-
-class Vote(FlaskForm):
-    submit = SelectField('Like')
-
-class Uploadblog(FlaskForm):
+class UploadBlog(FlaskForm):
     category=SelectField('Select Category',validators=[DataRequired()],choices=[('Interview blog','Relationship blog','Interview blog'),('Tech blog','Tech blog'),('Political blog','Political blog'),('Others','None of the above')])
     blog=TextAreaField('Write blog:',validators=[DataRequired()])
     submit=SubmitField('Post blog')

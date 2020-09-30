@@ -66,10 +66,10 @@ class Blog(db.Model):
     posted=db.Column(db.DateTime,default=datetime.utcnow)
     user_id=db.Column(db.Integer,db.ForeignKey('users.id'))
 
-class Quote:
-    def __init__(self, id, author, quote, permalink):
-        self.id = id
-        self.author = author
-        self.quote = quote
-        self.permalink = permalink
+# class Quote:
+#     def __init__(self, id, author, quote, permalink):
+#         self.id = id
+#         self.author = author
+#         self.quote = quote
+#         self.permalink = permalink
 

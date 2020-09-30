@@ -22,7 +22,7 @@ class User(UserMixin,db.Model):
     password_hash = db.Column(db.String(255))
     reviews = db.relationship('Review',backref = 'user',lazy = "dynamic")
     comments=db.relationship('Comment',backref='user',lazy='dynamic')
-    blog=db.relationship('blog',backref='user',lazy='dynamic')
+    blog=db.relationship('Blog',backref='user',lazy='dynamic')
     
     @property
     def password(self):

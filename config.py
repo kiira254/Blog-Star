@@ -5,10 +5,8 @@ class Config:
     '''
     General configuration parent class
     '''
-    # app.config.update(dict(
+    
     SECRET_KEY='Flask WTF Secret Key'
-    # WTF_CSRF_SECRET_KEY = "a csrf secret key"))
-    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://nelly:kamotho@localhost/blogs'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOADED_PHOTOS_DEST ='app/static/photos'
     SENDGRID_API_KEY=os.environ.get('SENDGRID_API_KEY')
@@ -37,11 +35,11 @@ class ProdConfig(Config):
     Args:
         Config: The parent configuration class with General configuration settings
     '''
-    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://nelly:kamotho@localhost/blogs'
+    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://nelly:kamotho@localhost/blog'
     pass
 
 class TestConfig(Config):
-    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://nelly:kamotho@localhost/blogs'
+    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://nelly:kamotho@localhost/blog'
     pass
 
 class DevConfig(Config):
@@ -51,7 +49,7 @@ class DevConfig(Config):
     Args:
         Config: The parent configuration class with General configuration settings
     '''
-    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://nelly:kamotho@localhost/blogs'
+    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://nelly:kamotho@localhost/blog'
     DEBUG = True
 
 config_options = {

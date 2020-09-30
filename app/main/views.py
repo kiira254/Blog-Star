@@ -8,17 +8,17 @@ from ..models import User,Comment,Blog,Post,Clap
 from .. import db,photos
 from .forms import UpdateProfile,UploadBlog,CommentsForm
 from flask import current_app
-from ..requests import getQuotes
+from ..requests import get_quotes
 
 @main.route('/')
 def index():
 
-    quotes = getQuotes()
+    quotes = get_quotes()
     title = 'bloges | Hub'
     page=request.args.get('page',1,type=int)
     all_blog=Blog.query.order_by(Blog.posted.desc()).paginate(page=page,per_page=10)
   
-    return render_template('index.html',bloges=all_blog, title = title)
+    return render_template('index.html',bloges=all_blog, title = title, quotes= quotes)
 
 @main.route('/profile', methods=['GET', 'POST'])
 @login_required

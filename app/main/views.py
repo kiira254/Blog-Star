@@ -12,45 +12,21 @@ from ..requests import get_quotes
 
 @main.route('/')
 def index():
-
     quotes = get_quotes()
-    title = 'bloges | Hub'
+    title = 'Blogs | Hub'
     page=request.args.get('page',1,type=int)
     all_blog=Blog.query.order_by(Blog.posted.desc()).paginate(page=page,per_page=10)
   
-    return render_template('index.html',bloges=all_blog, title = title, quotes= quotes)
+    return render_template('index.html',blogs=all_blog, title = title, quotes=quotes)
 
-@main.route('/profile', methods=['GET', 'POST'])
-@login_required
-def profile():
-    form = UpdateAccountForm()
-    if form.validate_on_submit():
-        if form.picture.data:
-            picture_file = save_picture(form.picture.data)
-            current_user.image_file = picture_file
-        current_user.username = form.username.data
-        current_user.email = form.email.data
-        db.session.commit()
-        flash('Your account has been updated!', 'success')
-        return redirect(url_for('main.profile'))
-    elif request.method == 'GET':
-        form.username.data = current_user.username
-        form.email.data = current_user.email
-    image_file = url_for('static', filename='profile_pic/' + current_user.image_file)
-    return render_template('profile/profile.html', title='Profile', image_file=image_file, form=form)
+@main.route('/user/<uname>')
+def profile(uname):
+    user = User.query.filter_by(username = uname).first()
+   
+    if user is None:
+        abort(404)
 
-def save_picture(form_picture):
-    random_hex = secrets.token_hex(8)
-    _, f_ext = os.path.splitext(form_picture.filename)
-    picture_fn = random_hex + f_ext
-    picture_path = os.path.join(app.root_path, 'static/profile_pic', picture_fn)
-
-    output_size = (125, 125)
-    i = Image.open(form_picture)
-    i.thumbnail(output_size)
-    i.save(picture_path)
-
-    return picture_fn
+    return render_template("profile/profile.html", user = user)
 
 @main.route('/user/<uname>/update',methods = ['GET','POST'])
 @login_required
@@ -90,60 +66,31 @@ def upload_blog():
     if current_user is None:
         abort(404)
     if blog.validate_on_submit():
-        blog=Blog(blog_category=blog.category.data,blog=blog.blog.data,user=current_user)
+        blog=Blog(blog=blog.blog.data,user=current_user)
         db.session.add(blog)
         db.session.commit()
         flash('Blog Uploaded')
         return redirect(url_for('main.index'))
     return render_template('profile/update_blog.html',blog=blog,title='Create Blog',legend='Create Blog')
 
-@main.route('/<int:pname>/comment',methods=['GET','POST'])
-@login_required
-def comment(pname):
-    comment=CommentsForm()
-    image=url_for('static',filename='profile/'+ current_user.profile_pic_path)
-    blog=Blog.query.filter_by(id=pname).first()
-    comment_query=Comment.query.filter_by(blog_id=blog.id).all()
-    
-    if request.args.get('likes'):
-        blog.upvotes=blog.upvotes+int(1)
-        db.session.add(blog)
-        db.session.commit()
-        return redirect(url_for('main.comment',pname=pname))
-
-    
-    elif request.args.get('dislike'):
-        blog.downvotes=blog.downvotes+int(1)
-        db.session.add(blog)
-        db.session.commit()
-        return redirect(url_for('main.comment',pname=pname))
-
-    if comments.validate_on_submit():
-        comment=Comment(comment=comments.comment.data,blog_id=blog.id,user_id=current_user.id)
-        db.session.add(comment)
-        db.session.commit()
-        return redirect(url_for('main.comment',pname=pname))
-    
-    return render_template('blog.html',comment=comments,blog=blog,comments=comment_query,title='blog Comment',image=image)
-
 @main.route('/<int:pname>/update',methods=['GET','POST'])
 @login_required
 def update(pname):
-    bloges=UploadBlog()
+    blogs=UploadBlog()
     blog=Blog.query.get(pname)
     if blog.user != current_user:
         abort(403)
-    if bloges.validate_on_submit():
-        blog.blog_category=bloges.category.data
-        blog.blog=bloges.blog.data
+    if blogs.validate_on_submit():
+        blog.blog_category=blogs.category.data
+        blog.blog=blogs.blog.data
         db.session.commit()
         flash('Successfully Updated!')
         return redirect(url_for('main.profile',uname=blog.user.username))
     elif request.method=='GET':
-        bloges.category.data=blog.blog_category
-        bloges.blog.data=blog.blog
+        blogs.category.data=blog.blog_category
+        blogs.blog.data=blog.blog
 
-    return render_template('profile/update_blog.html',blog=bloges,legend="Update blog")
+    return render_template('profile/update_blog.html',blog=blogs,legend="Update Blog")
 
 @main.route('/<int:blog_id>/delete',methods=['POST'])
 @login_required
@@ -167,53 +114,6 @@ def posted(username):
             .order_by(Blog.posted.desc())\
             .paginate(page=page,per_page=10)
 
-    return render_template('posted_by.html',bloges=all_blog,title=user.username,user=user,image=image)
+    return render_template('posted_by.html',blogs=all_blog,title=user.username,user=user,image=image)
 
-@main.route('/blog/upvote/<int:id>')
-@login_required
-def upvote(id):
-    '''
-    View function that add one to the vote_number column in the votes table
-    '''
-    blog_id = Blog.query.filter_by(id=id).first()
-
-    if blog_id is None:
-         abort(404)
-
-    new_vote = Votes(vote=int(1), user_id=current_user.id, bloges_id=blog_id.id)
-    new_vote.save_vote()
-    return redirect(url_for('.view_blog', id=id))
-
-
-
-@main.route('/blog/downvote/<int:id>')
-@login_required
-def downvote(id):
-    blog_id = Blog.query.filter_by(id=id).first()
-
-    new_vote = Votes(vote=int(2), user_id=current_user.id, bloges_id=blog_id.id)
-    new_vote.save_vote()
-    return redirect(url_for('.view_blog', id=id))
-
-@main.route('/blog/downvote/<int:id>')
-@login_required
-def vote_count(id):
-
-    votes = Votes.query.filter_by(user_id=current_user.id).all()
-
-    total_votes = votes.count()
-
-    return total_votes
-
-@main.route('/like/<int:blog_id>/<action>')
-@login_required
-def like_action(comment_id, action):
-    comment = Comment.query.filter_by(id=post_id).first_or_404()
-    if action == 'vote':
-        current_user.vote_comment(comment)
-        db.session.commit()
-    if action == 'downvote':
-        current_user.unlike_comment(comment)
-        db.session.commit()
-    return redirect(request.referrer) 
-
+   

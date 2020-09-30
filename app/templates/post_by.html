@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/profile.css')}}">
 {% endblock%}
+
 {% block content %}
 <div class="row">
     <div class="col-md-2 col-lg-3"></div>
@@ -24,7 +25,8 @@
                     <h3 class="card-title">{{user.username| capitalize}}</h3>
                     <hr style="border-width: 2px;">
                     <p class="card-text">Email Adress: {{user.email}}</p><hr>
-                    <p class="card-text">About Me: <span>{{user.bio}}</span></p>
+                    <p class="card-text">About Me: <span>{{user.bio}}</span></p> 
+                        
                     </div>
                 </div>
             </div>
@@ -37,9 +39,10 @@
     <div class="col-md-8 col-lg-8 col-xs-10 ">
         <ul class="list-index ">
             {% for blog in blogs.items%}
-            <li class="jumbotron " style="padding-left:40px ; list-style-type: none;">
+            <li class="jumbotron " style="padding-left:40px ; list-style-type: none;">                 
                 <div class="card mb-6 bg-dark text-white">
                     <div class="card-body">
+                        
                         <p class="card-text">{{blog.blog}}</p>
                         <p class="card-text" style="color:crimson"> Posted On: {{blog.posted.strftime('%Y-%m-%d')}}</p>
                     </div>
@@ -47,7 +50,7 @@
                     </a> <span><span><a href=""><i class="fa fa-thumbs-up" style="font-size:36px;color:green" aria-hidden="true"></i>
                     </a></span> <span><a href="{{downvote}}"><i class="fa fa-thumbs-down" style="font-size:36px;color:red" aria-hidden="true"></i>
                     </a></span></span>
-                </div>
+                </div>              
             </li>
             <br>
             {%endfor%}
@@ -55,4 +58,5 @@
     </div>
     <div class="col-md-2 col-lg-2 col-xs-1"></div>
 </div>
+
 {% endblock %}

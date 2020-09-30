@@ -3,7 +3,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from . import login_manager
 from datetime import datetime, timezone, time, timedelta
-import pytz
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -50,6 +49,29 @@ class Blog(db.Model):
     downvotes=db.Column(db.Integer)
     comment=db.relationship('Comment',backref='blog',lazy='dynamic')
     user_id=db.Column(db.Integer,db.ForeignKey('users.id'))
+@login_manager.user_loader
+def user_loader(user_id):
+    return User.query.get(user_id)
+
+
+class Post(db.Model):
+    __tablename__ = 'posts'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String, nullable=False)
+    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    content = db.Column(db.Text, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def __repr__(self):
+        return f'Post title: {self.title}, Date Posted: {self.date_posted}, Post Content: {self.content}'
 
 class Comment(db.Model):
     __tablename__='comments'
@@ -72,8 +94,7 @@ class Comment(db.Model):
         comment=Comment.query.filter_by(blog_id=blog_id).all()
         return comment
 
-date_time=datetime.utcnow().replace(tzinfo=pytz.UTC)
-time_zone=date_time.astimezone(pytz.timezone('Africa/Nairobi'))
+
 
 class Role(db.Model):
     __tablename__ = 'roles'

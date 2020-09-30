@@ -4,11 +4,11 @@ import secrets
 from flask import render_template,redirect,url_for,abort,flash,request
 from . import main
 from flask_login import login_required,current_user
-from ..models import User,Comment,Blog
+from ..models import User,Comment,Blog,Post
 from .. import db,photos
-from .froms import UpdateProfile,UploadBlog,CommentsForm
+from .forms import UpdateProfile,UploadBlog,CommentsForm
 from flask import current_app
-from app.requests import getQuotes
+from ..requests import getQuotes
 
 @main.route('/')
 def index():

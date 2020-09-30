@@ -1,5 +1,5 @@
-
-import request
+import urllib.request,json
+import requests
 
 def getQuotes():
     response = requests.get('http://quotes.stormconsultancy.co.uk/random.json')

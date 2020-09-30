@@ -53,6 +53,33 @@ class Blog(db.Model):
 def user_loader(user_id):
     return User.query.get(user_id)
 
+class Clap(db.Model):
+    __tablename__ = 'upvotes'
+    id = db.Column(db.Integer, primary_key=True)
+    upvote = db.Column(db.Integer, default=1)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def upvote(cls, id):
+        upvote_post = Clap(user=current_user, post_id=id)
+        upvote_post.save()
+
+    @classmethod
+    def query_upvotes(cls, id):
+        upvote = Clap.query.filter_by(post_id=id).all()
+        return upvote
+
+    @classmethod
+    def all_upvotes(cls):
+        upvotes = Clap.query.order_by('id').all()
+        return upvotes
+
+    def __repr__(self):
+        return f'{self.user_id}:{self.post_id}'
 
 class Post(db.Model):
     __tablename__ = 'posts'

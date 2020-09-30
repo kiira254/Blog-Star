@@ -5,14 +5,13 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/profile.css')}}">
 {% endblock%}
-
 {% block content %}
 <div class="row">
     <div class="col-md-2 col-lg-3"></div>
     <div class="col-md-8 col-lg-6 col-sm-10">
         <div class="card  mb-3" style="max-width: 540px;">
             <div class="row no-gutters">
-                <h1>blog By: {{user.username}}. Total ({{bloges.total}})</h1>
+                <h1>Blog By: {{user.username}}. Total ({{blogs.total}})</h1>
                 <div class="col-md-6 col-lg-6 col-sm-4  col-xs-4" >
                     {% if user.profile_pic_path %}
                     <img src="{{url_for('static',filename=user.profile_pic_path)}}" class="img-circle img-responsive" alt="" class="img-thumbnail" style="width: 250px; height: 250px;">
@@ -25,8 +24,7 @@
                     <h3 class="card-title">{{user.username| capitalize}}</h3>
                     <hr style="border-width: 2px;">
                     <p class="card-text">Email Adress: {{user.email}}</p><hr>
-                    <p class="card-text">About Me: <span>{{user.bio}}</span></p> 
-                        
+                    <p class="card-text">About Me: <span>{{user.bio}}</span></p>
                     </div>
                 </div>
             </div>
@@ -38,19 +36,18 @@
     <div class="col-md-2 col-lg-2 col-xs-1"></div>
     <div class="col-md-8 col-lg-8 col-xs-10 ">
         <ul class="list-index ">
-            {% for blog in bloges.items%}
-            <li class="jumbotron " style="padding-left:40px ; list-style-type: none;">                 
+            {% for blog in blogs.items%}
+            <li class="jumbotron " style="padding-left:40px ; list-style-type: none;">
                 <div class="card mb-6 bg-dark text-white">
                     <div class="card-body">
-                        <h4 class="card-title" style="color:crimson"> blog Category: {{blog.blog_category}} <span></span> Posted By: {{blog.user.username}}</h4>
                         <p class="card-text">{{blog.blog}}</p>
-                        <p class="card-text" style="color:crimson"> Posted On: {{blog.posted.strftime('%Y-%m-%d')}}<span></span>Likes: {{blog.upvotes}} <span></span>Dislikes: {{blog.downvotes}}</p>
+                        <p class="card-text" style="color:crimson"> Posted On: {{blog.posted.strftime('%Y-%m-%d')}}</p>
                     </div>
                     <a href="{{url_for('main.comment',pname=blog.id)}}"><i class="fa fa-comment" style="font-size:36px;color:blue" aria-hidden="true"></i>
                     </a> <span><span><a href=""><i class="fa fa-thumbs-up" style="font-size:36px;color:green" aria-hidden="true"></i>
                     </a></span> <span><a href="{{downvote}}"><i class="fa fa-thumbs-down" style="font-size:36px;color:red" aria-hidden="true"></i>
                     </a></span></span>
-                </div>              
+                </div>
             </li>
             <br>
             {%endfor%}
@@ -58,5 +55,4 @@
     </div>
     <div class="col-md-2 col-lg-2 col-xs-1"></div>
 </div>
-
 {% endblock %}

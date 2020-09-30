@@ -4,7 +4,7 @@ import secrets
 from flask import render_template,redirect,url_for,abort,flash,request
 from . import main
 from flask_login import login_required,current_user
-from ..models import User,Comment,Blog,Post
+from ..models import User,Comment,Blog,Post,Clap
 from .. import db,photos
 from .forms import UpdateProfile,UploadBlog,CommentsForm
 from flask import current_app
@@ -13,23 +13,44 @@ from ..requests import getQuotes
 @main.route('/')
 def index():
 
-    title = 'bloges | Hub'
     quotes = getQuotes()
-    posts = Post.query.all()
-    return render_template('index.html', quotes=quotes, posts=posts, current_user=current_user)
+    title = 'bloges | Hub'
     page=request.args.get('page',1,type=int)
-    all_blog=blog.query.order_by(blog.posted.desc()).paginate(page=page,per_page=10)
+    all_blog=Blog.query.order_by(Blog.posted.desc()).paginate(page=page,per_page=10)
   
     return render_template('index.html',bloges=all_blog, title = title)
 
-@main.route('/user/<uname>')
-def profile(uname):
-    user = User.query.filter_by(username = uname).first()
-   
-    if user is None:
-        abort(404)
+@main.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    form = UpdateAccountForm()
+    if form.validate_on_submit():
+        if form.picture.data:
+            picture_file = save_picture(form.picture.data)
+            current_user.image_file = picture_file
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        db.session.commit()
+        flash('Your account has been updated!', 'success')
+        return redirect(url_for('main.profile'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+    image_file = url_for('static', filename='profile_pic/' + current_user.image_file)
+    return render_template('profile/profile.html', title='Profile', image_file=image_file, form=form)
 
-    return render_template("profile/profile.html", user = user)
+def save_picture(form_picture):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(app.root_path, 'static/profile_pic', picture_fn)
+
+    output_size = (125, 125)
+    i = Image.open(form_picture)
+    i.thumbnail(output_size)
+    i.save(picture_path)
+
+    return picture_fn
 
 @main.route('/user/<uname>/update',methods = ['GET','POST'])
 @login_required
@@ -65,23 +86,23 @@ def update_pic(uname):
 @main.route('/upload/blog',methods=['GET','POST'])
 @login_required
 def upload_blog():
-    blog=Uploadblog()
+    blog=UploadBlog()
     if current_user is None:
         abort(404)
     if blog.validate_on_submit():
-        blog=blog(blog_category=blog.category.data,blog=blog.blog.data,user=current_user)
+        blog=Blog(blog_category=blog.category.data,blog=blog.blog.data,user=current_user)
         db.session.add(blog)
         db.session.commit()
-        flash('blog Uploaded')
+        flash('Blog Uploaded')
         return redirect(url_for('main.index'))
-    return render_template('profile/update_blog.html',blog=blog,title='Create blog',legend='Create blog')
+    return render_template('profile/update_blog.html',blog=blog,title='Create Blog',legend='Create Blog')
 
 @main.route('/<int:pname>/comment',methods=['GET','POST'])
 @login_required
 def comment(pname):
     comment=CommentsForm()
     image=url_for('static',filename='profile/'+ current_user.profile_pic_path)
-    blog=blog.query.filter_by(id=pname).first()
+    blog=Blog.query.filter_by(id=pname).first()
     comment_query=Comment.query.filter_by(blog_id=blog.id).all()
     
     if request.args.get('likes'):
@@ -108,8 +129,8 @@ def comment(pname):
 @main.route('/<int:pname>/update',methods=['GET','POST'])
 @login_required
 def update(pname):
-    bloges=Uploadblog()
-    blog=blog.query.get(pname)
+    bloges=UploadBlog()
+    blog=Blog.query.get(pname)
     if blog.user != current_user:
         abort(403)
     if bloges.validate_on_submit():
@@ -127,7 +148,7 @@ def update(pname):
 @main.route('/<int:blog_id>/delete',methods=['POST'])
 @login_required
 def delete_blog(blog_id):
-    blog=blog.query.get(blog_id)
+    blog=Blog.query.get(blog_id)
     if blog.user != current_user:
         abort(403)
     
@@ -142,8 +163,8 @@ def posted(username):
     user=User.query.filter_by(username=username).first_or_404()
     image=url_for('static',filename='profile/'+ user.profile_pic_path)
     page=request.args.get('page',1,type=int)
-    all_blog=blog.query.filter_by(user=user)\
-            .order_by(blog.posted.desc())\
+    all_blog=Blog.query.filter_by(user=user)\
+            .order_by(Blog.posted.desc())\
             .paginate(page=page,per_page=10)
 
     return render_template('posted_by.html',bloges=all_blog,title=user.username,user=user,image=image)
@@ -154,7 +175,7 @@ def upvote(id):
     '''
     View function that add one to the vote_number column in the votes table
     '''
-    blog_id = blog.query.filter_by(id=id).first()
+    blog_id = Blog.query.filter_by(id=id).first()
 
     if blog_id is None:
          abort(404)
@@ -168,7 +189,7 @@ def upvote(id):
 @main.route('/blog/downvote/<int:id>')
 @login_required
 def downvote(id):
-    blog_id = blog.query.filter_by(id=id).first()
+    blog_id = Blog.query.filter_by(id=id).first()
 
     new_vote = Votes(vote=int(2), user_id=current_user.id, bloges_id=blog_id.id)
     new_vote.save_vote()
@@ -195,3 +216,4 @@ def like_action(comment_id, action):
         current_user.unlike_comment(comment)
         db.session.commit()
     return redirect(request.referrer) 
+
